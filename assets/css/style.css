@@ -1,0 +1,180 @@
+:root {
+    --primary-color: #0f2027; /* Deep Blue/Black */
+    --secondary-color: #203a43; /* Teal Gradient Mid */
+    --accent-color: #f7b733; /* Gold/Amber */
+    --text-color: #ffffff;
+    --text-muted: #bdc3c7;
+    --bg-color: #f0f2f5;
+    --card-bg: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(to right, #0f2027, #2c5364); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Typography */
+h1, h2, h3, .logo { font-family: 'Poppins', sans-serif; }
+a { text-decoration: none; color: inherit; transition: 0.3s; }
+
+/* Header & Nav */
+header {
+    background: rgba(15, 32, 39, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 1rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #f7b733, #fc4a1a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+}
+
+/* Search Bar */
+.search-container { position: relative; width: 40%; }
+.search-bar {
+    width: 100%;
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 1rem;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
+.search-bar:focus {
+    background: rgba(255,255,255,0.2);
+    box-shadow: 0 0 15px rgba(247, 183, 51, 0.3);
+    outline: none;
+}
+.search-bar::placeholder { color: rgba(255,255,255,0.6); }
+
+/* Main Layout */
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 80px); /* Adjust based on header height */
+    overflow: hidden;
+}
+
+/* Hero Section (Hidden when exploring) */
+#hero {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
+    position: relative;
+}
+#hero::before {
+    content: ''; position: absolute; top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.4);
+}
+#hero-content { position: relative; z-index: 2; color: white; }
+#hero h1 { font-size: 4rem; margin-bottom: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+#hero p { font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9; }
+.btn-explore {
+    padding: 1rem 3rem;
+    background: var(--accent-color);
+    color: #0f2027;
+    font-weight: 600;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 15px rgba(247, 183, 51, 0.4);
+}
+.btn-explore:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(247, 183, 51, 0.6); }
+
+/* Explorer Interface */
+#explorer-interface {
+    display: none; /* Hidden initially */
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+/* Sidebar (Cities/Places) */
+#sidebar {
+    width: 450px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    overflow-y: auto;
+    box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+}
+
+#cities-section, #places-section { padding: 2rem; }
+h2 { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--secondary-color); position: relative; }
+h2::after {
+    content: ''; display: block; width: 50px; height: 3px;
+    background: var(--accent-color); margin-top: 0.5rem; border-radius: 2px;
+}
+
+/* Cards */
+.card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+.card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+.card img { width: 100%; height: 180px; object-fit: cover; }
+.card-content { padding: 1.5rem; }
+.card-content h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: #2c3e50; }
+.card-content p { font-size: 0.9rem; color: #7f8c8d; line-height: 1.5; }
+
+/* Weather Widget */
+.weather-widget {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
+}
+.weather-widget h3 { font-size: 2.5rem; margin: 0.5rem 0; }
+
+/* Back Button */
+.back-btn {
+    background: none; border: none; font-size: 1rem; cursor: pointer; color: var(--secondary-color);
+    margin-bottom: 1rem; display: flex; align-items: center; font-weight: 600;
+}
+.back-btn:hover { color: var(--accent-color); }
+
+/* Map */
+#map-container { flex: 1; }
+#map { width: 100%; height: 100%; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
