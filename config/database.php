@@ -1,12 +1,11 @@
 <?php
-$host = 'localhost';
-$user = 'root';
-$pass = ''; // Default XAMPP password
-$db = 'tourist_guide';
+require_once __DIR__ . '/../vendor/autoload.php';
 
-$conn = new mysqli($host, $user, $pass, $db);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+try {
+    $client = new MongoDB\Client("mongodb://localhost:27017");
+    $db = $client->smart_guide; // Using the database 'smart_guide'
+    $conn = $db;
+} catch (Exception $e) {
+    die("Connection failed: " . $e->getMessage());
 }
 ?>

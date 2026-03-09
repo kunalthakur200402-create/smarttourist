@@ -2,10 +2,13 @@
 header('Content-Type: application/json');
 require_once '../config/database.php';
 
-$result = $conn->query("SELECT * FROM cities");
+$cursor = $conn->cities->find();
 $cities = [];
 
-while ($row = $result->fetch_assoc()) {
+foreach ($cursor as $row) {
+    $row['_id'] = (string)$row['_id'];
+    // If the frontend expects 'id' instead of '_id', we can add it
+    $row['id'] = $row['_id'];
     $cities[] = $row;
 }
 

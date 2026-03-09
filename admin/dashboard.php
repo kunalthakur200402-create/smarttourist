@@ -1,18 +1,19 @@
 <?php
 session_start();
 if (!isset($_SESSION['admin_id'])) {
-    header("Location: login.php");
+    header("Location: ../auth/login.php");
     exit();
 }
 require_once '../config/database.php';
-$result = $conn->query("SELECT * FROM cities");
+$cities = $conn->cities->find();
+$total_cities = $conn->cities->countDocuments();
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard - WanderWise</title>
+    <title>Dashboard - Smart Guide AI</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <style>
         body {
@@ -136,7 +137,7 @@ $result = $conn->query("SELECT * FROM cities");
 
 <body>
     <nav class="admin-nav">
-        <div class="logo">WanderWise Admin</div>
+        <div class="logo">Smart Guide AI Admin</div>
         <a href="logout.php" style="color: rgba(255,255,255,0.8); text-decoration: none;">Logout</a>
     </nav>
 
@@ -144,7 +145,7 @@ $result = $conn->query("SELECT * FROM cities");
         <div class="stats-grid">
             <div class="stat-card">
                 <h3>Total Cities</h3>
-                <p><?php echo $result->num_rows; ?></p>
+                <p><?php echo $total_cities; ?></p>
             </div>
             <!-- Additional stats could go here -->
         </div>
@@ -152,29 +153,50 @@ $result = $conn->query("SELECT * FROM cities");
         <div class="content-card">
             <div class="card-header">
                 <h2>Manage Cities</h2>
-                <a href="add_city.php" class="btn-add">+ Add New City</a>
+                <div>
+                    <a href="diagnostics.php" style="margin-right: 15px; color: #7f8c8d; text-decoration: none; font-size: 0.9rem;">🛠 API Diagnostics</a>
+                    <a href="add_city.php" class="btn-add">+ Add New City</a>
+                </div>
             </div>
             <table>
                 <thead>
                     <tr>
                         <th>City</th>
                         <th>Country</th>
+                        <th>Weather Info</th>
+                        <th>Distance/Dir.</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while ($row = $result->fetch_assoc()): ?>
+                    <?php foreach ($cities as $row): ?>
                         <tr>
                             <td style="font-weight: 600; color: #2c3e50;">
                                 <?php echo htmlspecialchars($row['city_name']); ?>
                             </td>
                             <td><?php echo htmlspecialchars($row['country']); ?></td>
+                            <td style="font-size: 0.85rem;">
+                                <?php if (isset($row['weather_temp'])): ?>
+                                    <b><?php echo htmlspecialchars($row['weather_temp']); ?>°C</b> - <?php echo htmlspecialchars($row['weather_desc']); ?>
+                                <?php else: ?>
+                                    <span style="color: #ccc;">N/A</span>
+                                <?php endif; ?>
+                            </td>
+                            <td style="font-size: 0.85rem;">
+                                <?php if (isset($row['directions'])): ?>
+                                    <div title="<?php echo htmlspecialchars($row['directions']); ?>" style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        <?php echo htmlspecialchars($row['directions']); ?>
+                                    </div>
+                                <?php else: ?>
+                                    <span style="color: #ccc;">N/A</span>
+                                <?php endif; ?>
+                            </td>
                             <td class="actions">
-                                <a href="manage_places.php?city_id=<?php echo $row['id']; ?>" class="edit">Manage Places</a>
+                                <a href="manage_places.php?city_id=<?php echo (string)$row['_id']; ?>" class="edit">Manage Places</a>
                                 <!-- Add edit/delete for city here if needed -->
                             </td>
                         </tr>
-                    <?php endwhile; ?>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>

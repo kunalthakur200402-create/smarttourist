@@ -1,43 +1,53 @@
 <?php
 session_start();
+
 if (!isset($_SESSION['admin_id'])) {
-    header("Location: login.php");
+    header("Location: ../auth/login.php");
     exit();
 }
 require_once '../config/config.php';
+use MongoDB\BSON\ObjectId;
+use MongoDB\BSON\UTCDateTime;
+
 require_once '../config/database.php';
 
-$city_id = isset($_GET['city_id']) ? intval($_GET['city_id']) : 0;
-if ($city_id == 0)
+$city_id = isset($_GET['city_id']) ? $_GET['city_id'] : '';
+if (empty($city_id))
     header("Location: dashboard.php");
 
-$city = $conn->query("SELECT * FROM cities WHERE id = $city_id")->fetch_assoc();
+try {
+    $city = $conn->cities->findOne(['_id' => new ObjectId($city_id)]);
+} catch (Exception $e) {
+    header("Location: dashboard.php");
+    exit();
+}
 
 // Handle Add Place
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_place'])) {
-    $place_name = $conn->real_escape_string($_POST['place_name']);
-    $description = $conn->real_escape_string($_POST['description']); // Manual or AI
-    $image_url = $conn->real_escape_string($_POST['image_url']);
+    $place_name = $_POST['place_name'];
+    $description = $_POST['description']; 
+    $image_url = $_POST['image_url'];
 
-    // If AI description is used, it replaces the manual one
-    if (isset($_POST['use_ai']) && $_POST['use_ai'] == '1') {
-        // AI Logic handled via separate API call usually, but here we might trust the form input
-        // For now, assuming description field gets populated.
-    }
-
-    $sql = "INSERT INTO places (city_id, place_name, description, image_url) VALUES ('$city_id', '$place_name', '$description', '$image_url')";
-    $conn->query($sql);
+    $insert = $conn->places->insertOne([
+        'city_id' => $city_id,
+        'place_name' => $place_name,
+        'description' => $description,
+        'image_url' => $image_url,
+        'created_at' => new UTCDateTime()
+    ]);
 }
 
 // Handle Delete
 if (isset($_GET['delete'])) {
-    $id = intval($_GET['delete']);
-    $conn->query("DELETE FROM places WHERE id = $id");
+    $id = $_GET['delete'];
+    try {
+        $conn->places->deleteOne(['_id' => new ObjectId($id)]);
+    } catch (Exception $e) {}
     header("Location: manage_places.php?city_id=$city_id");
     exit();
 }
 
-$places = $conn->query("SELECT * FROM places WHERE city_id = $city_id");
+$places = $conn->places->find(['city_id' => $city_id]);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -154,7 +164,7 @@ $places = $conn->query("SELECT * FROM places WHERE city_id = $city_id");
 
 <body>
     <nav class="admin-nav">
-        <div class="logo">WanderWise Admin</div>
+        <div class="logo">Smart Guide AI Admin</div>
         <a href="dashboard.php" style="color:white;">&larr; Back to Dashboard</a>
     </nav>
 
@@ -186,16 +196,16 @@ $places = $conn->query("SELECT * FROM places WHERE city_id = $city_id");
 
         <div class="card">
             <h3>Existing Places</h3>
-            <?php while ($place = $places->fetch_assoc()): ?>
+            <?php foreach ($places as $place): ?>
                 <div class="place-item">
                     <div class="place-info">
-                        <h4><?php echo $place['place_name']; ?></h4>
-                        <p><?php echo substr($place['description'], 0, 80) . '...'; ?></p>
+                        <h4><?php echo htmlspecialchars($place['place_name']); ?></h4>
+                        <p><?php echo htmlspecialchars(substr($place['description'], 0, 80)) . '...'; ?></p>
                     </div>
-                    <a href="manage_places.php?city_id=<?php echo $city_id; ?>&delete=<?php echo $place['id']; ?>"
+                    <a href="manage_places.php?city_id=<?php echo $city_id; ?>&delete=<?php echo (string)$place['_id']; ?>"
                         class="delete-btn" onclick="return confirm('Delete this place?')">Delete</a>
                 </div>
-            <?php endwhile; ?>
+            <?php endforeach; ?>
         </div>
     </div>
 

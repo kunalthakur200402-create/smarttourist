@@ -5,23 +5,21 @@ $username = 'admin';
 $password = 'admin123';
 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-$sql = "UPDATE admins SET password = '$hashed_password' WHERE username = '$username'";
+$update = $conn->admins->updateOne(
+    ['username' => $username],
+    ['$set' => ['password' => $hashed_password]]
+);
 
-if ($conn->query($sql) === TRUE) {
-    if ($conn->affected_rows > 0) {
-        echo "Password updated successfully for user 'admin'. New password: admin123";
-    } else {
-        // User might not exist, let's create it
-        $sql_insert = "INSERT INTO admins (username, password) VALUES ('$username', '$hashed_password')";
-        if ($conn->query($sql_insert) === TRUE) {
-            echo "User 'admin' created with password: admin123";
-        } else {
-            echo "Error creating user: " . $conn->error;
-        }
-    }
+if ($update->getModifiedCount() > 0) {
+    echo "Password updated successfully for user 'admin'. New password: admin123";
 } else {
-    echo "Error updating record: " . $conn->error;
+    // Check if user exists first
+    $user = $conn->admins->findOne(['username' => $username]);
+    if (!$user) {
+        $conn->admins->insertOne(['username' => $username, 'password' => $hashed_password]);
+        echo "User 'admin' created with password: admin123";
+    } else {
+        echo "Password for 'admin' was already up to date.";
+    }
 }
-
-$conn->close();
 ?>

@@ -46,7 +46,7 @@ if (isset($data['place_name'])) {
             echo json_encode(['error' => 'API Error', 'details' => $response]);
         }
     }
-    curl_close($ch);
+
 } else {
     echo json_encode(['error' => 'Place Name not provided']);
 }

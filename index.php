@@ -1,82 +1,60 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WanderWise | Experience the World</title>
+    <title>SmartGuide | AI Travel Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
-    <!-- Fonts -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500&display=swap"
-        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
 </head>
-
 <body>
-
-    <header>
-        <div class="logo">WanderWise</div>
-        <div class="search-container">
-            <input type="text" id="city-search" class="search-bar" placeholder="Where do you want to go?">
-            <!-- History Dropdown could go here -->
+    <!-- Cinematic 3D Background -->
+    <div id="ai-preloader">
+        <div class="scan-beam"></div>
+        <div class="loader-content">
+            <div class="loader-text">WELCOME TO SMART GUIDE AI</div>
+            <div class="telemetry">
+                STATUS: ENCRYPTED_CHANNEL_ACTIVE<br>
+                SATELLITE: SG-AI-01 SYNCED<br>
+                COORDS: 28.6139° N, 77.2090° E
+            </div>
         </div>
-        <nav>
-            <a href="admin/login.php" style="color:white; font-weight:500;">Admin</a>
-        </nav>
-    </header>
+    </div>
+    <div id="canvas-container"></div>
 
-    <main>
-        <!-- Hero Section -->
-        <section id="hero">
-            <div id="hero-content">
-                <h1>Discover Your Next Adventure</h1>
-                <p>Explore top destinations, hidden gems, and local secrets.</p>
-                <button class="btn-explore" onclick="startExploring()">Start Exploring</button>
+    <nav>
+        <div class="logo">
+            Smart Guide AI <span class="ai-tag">AI</span>
+        </div>
+        <div class="nav-links">
+            <?php if(isset($_SESSION['user'])) { ?>
+                <a href="dashboard.php" class="nav-link">Dashboard</a>
+                <a href="auth/logout.php" class="nav-link logout">Logout</a>
+            <?php } else { ?>
+                <a href="auth/login.php" class="nav-link">Sign In</a>
+                <a href="auth/register.php" class="nav-cta">Get Started</a>
+            <?php } ?>
+        </div>
+    </nav>
+
+    <main class="hero">
+        <div class="hero-content">
+            <h1 class="glow-text">Explore Anywhere <br> <span class="cyan-text">Instantly.</span></h1>
+            <p class="hero-subtitle">Your personal AI travel expert for every corner of the globe.</p>
+            <div class="hero-btns">
+                <?php if(!isset($_SESSION['user'])) { ?>
+                    <a href="auth/register.php" class="btn-primary">Start Your Adventure</a>
+                <?php } else { ?>
+                    <a href="dashboard.php" class="btn-primary">Launch Explorer</a>
+                <?php } ?>
             </div>
-        </section>
-
-        <!-- Explorer Interface (Map + Sidebar) -->
-        <section id="explorer-interface">
-            <!-- Sidebar -->
-            <aside id="sidebar">
-                <div id="cities-section">
-                    <h2>Popular Destinations</h2>
-                    <div id="city-list">
-                        <!-- Cities Injected via JS -->
-                    </div>
-                </div>
-
-                <div id="places-section" style="display: none;">
-                    <button id="back-btn" class="back-btn">&larr; Back to Cities</button>
-                    <div id="weather-widget" class="weather-widget">Loading Weather...</div>
-                    <h2 id="current-city-name">City Name</h2>
-                    <div id="places-list">
-                        <!-- Places Injected via JS -->
-                    </div>
-                </div>
-            </aside>
-
-            <!-- Dynamic Map -->
-            <div id="map-container">
-                <div id="map"></div>
-            </div>
-        </section>
+        </div>
     </main>
 
-    <!-- Scripts -->
-    <script>
-        function startExploring() {
-            document.getElementById('hero').style.display = 'none';
-            document.getElementById('explorer-interface').style.display = 'flex';
-            initMap(); // Re-trigger map resize/init if needed
-        }
-    </script>
-    <script src="assets/js/app.js"></script>
-    <?php require_once 'config/config.php'; ?>
-    <script
-        src="https://maps.googleapis.com/maps/api/js?key=<?php echo GOOGLE_MAPS_API_KEY; ?>&callback=initMap&libraries=places"
-        async defer></script>
-
+    <script src="assets/js/loader.js"></script>
+    <script src="assets/js/landing-3d.js"></script>
+    <script src="assets/js/cursor.js"></script>
 </body>
-
 </html>
